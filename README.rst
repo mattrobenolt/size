@@ -4,6 +4,9 @@ size
 .. image:: https://travis-ci.org/mattrobenolt/size.svg?branch=master
    :target: https://travis-ci.org/mattrobenolt/size
 
+.. image:: https://godoc.org/github.com/mattrobenolt/size?status.png
+   :target: https://godoc.org/github.com/mattrobenolt/size
+
 ``size`` is a package for working with byte capacities similar to ``time.Duration``.
 
 Usage
