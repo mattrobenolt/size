@@ -4,7 +4,7 @@ size
 .. image:: https://travis-ci.org/mattrobenolt/size.svg?branch=master
    :target: https://travis-ci.org/mattrobenolt/size
 
-``size`` is a pacakge for working with byte capacities similiar to ``time.Duration``.
+``size`` is a package for working with byte capacities similiar to ``time.Duration``.
 
 Usage
 ~~~~~
