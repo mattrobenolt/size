@@ -1,3 +1,4 @@
+// Package implements functionality for working with byte sizes.
 package size
 
 import (
@@ -5,26 +6,48 @@ import (
 	"strconv"
 )
 
+// A Capacity represents a size in bytes.
 type Capacity uint64
 
+// Common capacities.
+//
+// To count the number of units in a Capacity, divide:
+//	gigabyte := size.Gigabyte
+//	fmt.Print(gigabyte/size.Kilobyte) // prints 1048576
+//
+// To convert an integer number of units to a Capacity, multiply:
+//	gigabytes := 5
+//	fmt.Print(gigabytes*size.Gigabyte) // prints 5G
 const (
-	Byte Capacity = 1
-
-	Kilobyte = Byte << 10
-	Megabyte = Kilobyte << 10
-	Gigabyte = Megabyte << 10
-	Terabyte = Gigabyte << 10
-	Petabyte = Terabyte << 10
-	Exabyte  = Petabyte << 10
+	Byte     Capacity = 1
+	Kilobyte          = Byte << 10
+	Megabyte          = Kilobyte << 10
+	Gigabyte          = Megabyte << 10
+	Terabyte          = Gigabyte << 10
+	Petabyte          = Terabyte << 10
+	Exabyte           = Petabyte << 10
 )
 
-func (c Capacity) Bytes() uint64     { return uint64(c) }
+// Bytes returns the capacity as an integer bytes count.
+func (c Capacity) Bytes() uint64 { return uint64(c) }
+
+// Kilobytes returns the capacity as an integer kilobytes count.
 func (c Capacity) Kilobytes() uint64 { return c.Bytes() >> 10 }
+
+// Megabytes returns the capacity as an integer megabytes count.
 func (c Capacity) Megabytes() uint64 { return c.Kilobytes() >> 10 }
+
+// Gigabytes returns the capacity as an integer gigabytes count.
 func (c Capacity) Gigabytes() uint64 { return c.Megabytes() >> 10 }
+
+// Terabytes returns the capacity as an integer terabytes count.
 func (c Capacity) Terabytes() uint64 { return c.Gigabytes() >> 10 }
+
+// Petabytes returns the capacity as an integer petabytes count.
 func (c Capacity) Petabytes() uint64 { return c.Terabytes() >> 10 }
-func (c Capacity) Exabytes() uint64  { return c.Petabytes() >> 10 }
+
+// Exabytes returns the capacity as an integer exabytes count.
+func (c Capacity) Exabytes() uint64 { return c.Petabytes() >> 10 }
 
 var units = [...]struct {
 	Suffix byte
@@ -47,9 +70,14 @@ var unitMap = map[byte]Capacity{
 	'K': Kilobyte,
 }
 
+// String returns a string representing the capacity in the form of "10.4G".
+// Capacities are rounded to the nearest 1/10th within the largest
+// unit of granularity. This format is similar to the "human" output from
+// common Linux tools.
 func (c Capacity) String() string {
 	u := uint64(c)
 
+	// If we're less than a kilobyte, we just display the number without a unit
 	if u < uint64(Kilobyte) {
 		if u == 0 {
 			return "0"
@@ -61,6 +89,7 @@ func (c Capacity) String() string {
 	var buf [5]byte
 	w := len(buf)
 
+	// Find the largest unit that we can fit into
 	for _, unit := range units {
 		if u == unit.Size {
 			w -= 2
@@ -120,6 +149,10 @@ func fmtInt(buf []byte, v uint64) int {
 	return w
 }
 
+// ParseCapacity parses a capacity string.
+// A capacity string may only contain whole integers and one unit suffix,
+// such as "10G" or "5T".
+// Valid capacity units are "K", "M", "G", "T", "P", "E".
 func ParseCapacity(s string) (Capacity, error) {
 	if s == "" {
 		return 0, errors.New("size: empty capacity")
