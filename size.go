@@ -1,4 +1,4 @@
-// Package implements functionality for working with byte sizes.
+// Package size implements functionality for working with byte sizes.
 package size
 
 import (
@@ -106,6 +106,16 @@ func (c Capacity) String() string {
 	}
 
 	return string(buf[w:])
+}
+
+// Set parses the given string and sets the receiver to the parsed value.
+func (c *Capacity) Set(s string) error {
+	v, err := ParseCapacity(s)
+	if err != nil {
+		return err
+	}
+	*c = v
+	return nil
 }
 
 // fmtFrac formats the fraction of v/unit (e.g., ".1") into the
