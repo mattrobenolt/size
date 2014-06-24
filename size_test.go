@@ -50,3 +50,12 @@ func TestParseCapacity(t *testing.T) {
 		}
 	}
 }
+
+func TestSetCapacity(t *testing.T) {
+	var c Capacity
+	for _, tt := range parseTests {
+		if err := (&c).Set(tt.str); c != tt.c || err != nil {
+			t.Errorf("Set(%s) = %d, want %d, err = %s", tt.str, c, tt.c, err)
+		}
+	}
+}
