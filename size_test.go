@@ -13,6 +13,7 @@ var capacityTests = []struct {
 	{"1K", 1025}, // Rounding down
 	{"1.1K", 1090},
 	{"2K", 2047}, // Rounding up
+	{"135.2M", 141798563},
 	{"1M", 1 * Megabyte},
 	{"2G", 2 * Gigabyte},
 	{"1T", 1 * Terabyte},

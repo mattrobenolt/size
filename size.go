@@ -85,8 +85,8 @@ func (c Capacity) String() string {
 		return strconv.FormatUint(u, 10)
 	}
 
-	// Longest we could have is 1023P
-	var buf [5]byte
+	// Longest we could have is 1023.1P
+	var buf [7]byte
 	w := len(buf)
 
 	// Find the largest unit that we can fit into
