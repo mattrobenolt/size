@@ -1,35 +1,51 @@
 // Package size implements functionality for working with byte sizes.
 package size
 
-import (
-	"errors"
-	"strconv"
-)
+import "errors"
 
 // A Capacity represents a size in bytes.
 type Capacity uint64
 
-// Common capacities.
-//
-// To count the number of units in a Capacity, divide:
-//	gigabyte := size.Gigabyte
-//	fmt.Print(gigabyte/size.Kilobyte) // prints 1048576
-//
-// To convert an integer number of units to a Capacity, multiply:
-//	gigabytes := 5
-//	fmt.Print(gigabytes*size.Gigabyte) // prints 5G
 const (
-	Byte     Capacity = 1
-	Kilobyte          = Byte << 10
-	Megabyte          = Kilobyte << 10
-	Gigabyte          = Megabyte << 10
-	Terabyte          = Gigabyte << 10
-	Petabyte          = Terabyte << 10
-	Exabyte           = Petabyte << 10
+	Byte Capacity = 1
+
+	// base 10 quantities
+	Kilobyte = Byte * 1000
+	Megabyte = Kilobyte * 1000
+	Gigabyte = Megabyte * 1000
+	Terabyte = Gigabyte * 1000
+	Petabyte = Terabyte * 1000
+	Exabyte  = Petabyte * 1000
+
+	// base 2 quantities, binary
+	Kibibyte = Byte << 10
+	Mebibyte = Kibibyte << 10
+	Gibibyte = Mebibyte << 10
+	Tebibyte = Gibibyte << 10
+	Pebibyte = Tebibyte << 10
+	Exbibyte = Pebibyte << 10
 )
 
 // Bytes returns the capacity as an integer bytes count.
 func (c Capacity) Bytes() uint64 { return uint64(c) }
+
+// Kibibytes returns the capacity as an integer kibibytes count.
+func (c Capacity) Kibibytes() uint64 { return c.Bytes() / 1000 }
+
+// Mebibytes returns the capacity as an integer mebibytes count.
+func (c Capacity) Mebibytes() uint64 { return c.Kibibytes() / 1000 }
+
+// Gibibytes returns the capacity as an integer gibibytes count.
+func (c Capacity) Gibibytes() uint64 { return c.Mebibytes() / 1000 }
+
+// Tebibytes returns the capacity as an integer tebibytes count.
+func (c Capacity) Tebibytes() uint64 { return c.Gibibytes() / 1000 }
+
+// Pebibytes returns the capacity as an integer pebibytes count.
+func (c Capacity) Pebibytes() uint64 { return c.Tebibytes() / 1000 }
+
+// Exbibyte returns the capacity as an integer exbibyte count.
+func (c Capacity) Exbibyte() uint64 { return c.Pebibytes() >> 10 }
 
 // Kilobytes returns the capacity as an integer kilobytes count.
 func (c Capacity) Kilobytes() uint64 { return c.Bytes() >> 10 }
@@ -61,7 +77,7 @@ var units = [...]struct {
 	{'K', uint64(Kilobyte)},
 }
 
-var unitMap = map[byte]Capacity{
+var unitMapBinary = map[byte]Capacity{
 	'E': Exabyte,
 	'P': Petabyte,
 	'T': Terabyte,
@@ -70,7 +86,17 @@ var unitMap = map[byte]Capacity{
 	'K': Kilobyte,
 }
 
-// String returns a string representing the capacity in the form of "10.4G".
+var unitMapDecimal = map[byte]Capacity{
+	'E': Exbibyte,
+	'P': Pebibyte,
+	'T': Tebibyte,
+	'G': Gibibyte,
+	'M': Mebibyte,
+	'K': Kibibyte,
+}
+
+// String returns a string representing the capacity in the form of "10.4G"
+// representing their base 10 measurement, gigabytes in this example.
 // Capacities are rounded to the nearest 1/10th within the largest
 // unit of granularity. This format is similar to the "human" output from
 // common Linux tools.
@@ -82,11 +108,14 @@ func (c Capacity) String() string {
 		if u == 0 {
 			return "0"
 		}
-		return strconv.FormatUint(u, 10)
+		// since we're less than a kilobyte, the max size is 4 digits
+		var buf [4]byte
+		w := fmtInt(buf[:], u)
+		return string(buf[:w])
 	}
 
 	// Longest we could have is 1023.1P
-	var buf [7]byte
+	var buf [len("1023.1P")]byte
 	w := len(buf)
 
 	// Find the largest unit that we can fit into
@@ -162,7 +191,10 @@ func fmtInt(buf []byte, v uint64) int {
 // ParseCapacity parses a capacity string.
 // A capacity string may only contain whole integers and one unit suffix,
 // such as "10G" or "5T".
-// Valid capacity units are "K", "M", "G", "T", "P", "E".
+// Valid capacity units are:
+//
+//	"K", "M", "G", "T", "P", "E",
+//	"Ki", "Mi", "Gi", "Ti", "Pi", "Ei"
 func ParseCapacity(s string) (Capacity, error) {
 	if s == "" {
 		return 0, errors.New("size: empty capacity")
@@ -185,9 +217,21 @@ func ParseCapacity(s string) (Capacity, error) {
 	if s == "" {
 		return Capacity(c), nil
 	}
-	if len(s) != 1 {
+
+	var unitMap map[byte]Capacity
+	switch len(s) {
+	case 2:
+		if s[1] != 'i' {
+			return 0, errors.New("size: invalid capacity " + orig + " " + s)
+		}
+		// base 10 unit
+		unitMap = unitMapDecimal
+	case 1:
+		unitMap = unitMapBinary
+	default:
 		return 0, errors.New("size: invalid capacity " + orig + " " + s)
 	}
+
 	unit, ok := unitMap[s[0]]
 	if !ok {
 		return 0, errors.New("size: invalid capacity " + orig)
