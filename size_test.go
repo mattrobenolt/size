@@ -9,6 +9,9 @@ var capacityTests = []struct {
 	c   Capacity
 }{
 	{"0", 0},
+	{"9", 9},
+	{"58", 58},
+	{"100", 100},
 	{"1K", 1000},
 	{"1K", 1001}, // Rounding down
 	{"1.1K", 1090},

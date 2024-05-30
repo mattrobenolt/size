@@ -111,7 +111,7 @@ func (c Capacity) String() string {
 		// since we're less than a kilobyte, the max size is 4 digits
 		var buf [4]byte
 		w := fmtInt(buf[:], u)
-		return string(buf[:w])
+		return string(buf[w:])
 	}
 
 	// Longest we could have is 1023.1P
