@@ -30,40 +30,40 @@ const (
 func (c Capacity) Bytes() uint64 { return uint64(c) }
 
 // Kibibytes returns the capacity as an integer kibibytes count.
-func (c Capacity) Kibibytes() uint64 { return c.Bytes() / 1000 }
+func (c Capacity) Kibibytes() uint64 { return c.Bytes() >> 10 }
 
 // Mebibytes returns the capacity as an integer mebibytes count.
-func (c Capacity) Mebibytes() uint64 { return c.Kibibytes() / 1000 }
+func (c Capacity) Mebibytes() uint64 { return c.Kibibytes() >> 10 }
 
 // Gibibytes returns the capacity as an integer gibibytes count.
-func (c Capacity) Gibibytes() uint64 { return c.Mebibytes() / 1000 }
+func (c Capacity) Gibibytes() uint64 { return c.Mebibytes() >> 10 }
 
 // Tebibytes returns the capacity as an integer tebibytes count.
-func (c Capacity) Tebibytes() uint64 { return c.Gibibytes() / 1000 }
+func (c Capacity) Tebibytes() uint64 { return c.Gibibytes() >> 10 }
 
 // Pebibytes returns the capacity as an integer pebibytes count.
-func (c Capacity) Pebibytes() uint64 { return c.Tebibytes() / 1000 }
+func (c Capacity) Pebibytes() uint64 { return c.Tebibytes() >> 10 }
 
 // Exbibyte returns the capacity as an integer exbibyte count.
 func (c Capacity) Exbibyte() uint64 { return c.Pebibytes() >> 10 }
 
 // Kilobytes returns the capacity as an integer kilobytes count.
-func (c Capacity) Kilobytes() uint64 { return c.Bytes() >> 10 }
+func (c Capacity) Kilobytes() uint64 { return c.Bytes() / 1000 }
 
 // Megabytes returns the capacity as an integer megabytes count.
-func (c Capacity) Megabytes() uint64 { return c.Kilobytes() >> 10 }
+func (c Capacity) Megabytes() uint64 { return c.Kilobytes() / 1000 }
 
 // Gigabytes returns the capacity as an integer gigabytes count.
-func (c Capacity) Gigabytes() uint64 { return c.Megabytes() >> 10 }
+func (c Capacity) Gigabytes() uint64 { return c.Megabytes() / 1000 }
 
 // Terabytes returns the capacity as an integer terabytes count.
-func (c Capacity) Terabytes() uint64 { return c.Gigabytes() >> 10 }
+func (c Capacity) Terabytes() uint64 { return c.Gigabytes() / 1000 }
 
 // Petabytes returns the capacity as an integer petabytes count.
-func (c Capacity) Petabytes() uint64 { return c.Terabytes() >> 10 }
+func (c Capacity) Petabytes() uint64 { return c.Terabytes() / 1000 }
 
 // Exabytes returns the capacity as an integer exabytes count.
-func (c Capacity) Exabytes() uint64 { return c.Petabytes() >> 10 }
+func (c Capacity) Exabytes() uint64 { return c.Petabytes() / 1000 }
 
 var units = [...]struct {
 	Suffix byte

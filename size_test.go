@@ -71,3 +71,10 @@ func TestSetCapacity(t *testing.T) {
 		}
 	}
 }
+
+func TestConvert(t *testing.T) {
+	s := 536870912 * Byte
+	if s.Mebibytes() != 512 {
+		t.Errorf("wrong conversion to mebibytes, want 512, got %d", s.Mebibytes())
+	}
+}
